@@ -13,6 +13,7 @@ body {
     width: 100%;
 }
 
+/* Navigation */
 .navbar ul {
     list-style-type: none;
     margin: 0;
@@ -24,7 +25,7 @@ body {
     height: 3.5em;
 }
 .navbar li {
-    float: left;
+    float: right;
 }
   
 .navbar li a {
@@ -44,6 +45,11 @@ body {
     color: #91a7d0;
 }
 
+#mostRight {
+    margin-right: 20px;
+}
+
+/* Title */
 .header{
     height: 200px;
     width: 100%;
@@ -64,12 +70,50 @@ body {
     margin-top: 0;
 }
 
+/* Download Button */
 #resume {
     background-color: #ffcc00;
     color: #ffffff;
     font-size: 30px;
     border-radius: 10px;
     padding: 10px;
+}
+
+/* Mouse Animation */
+.mouse {
+	max-width: 2.5em;
+	width: 100%;
+	height: auto;
+}
+
+.scroll {
+	animation-name: scroll;
+	animation-duration: 1.5s;
+	animation-timing-function: cubic-bezier(0.650, -0.550, 0.250, 1.500);
+	animation-iteration-count: infinite;
+	transform-origin: 50% 20.5px;
+	will-change: transform, opacity;
+	opacity: 1;
+}
+
+.scroll-link {
+	position: absolute;
+	bottom: 1rem;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+@keyframes scroll {
+
+	0%, 20% {
+		transform: translateY(0) scaleY(1);
+	}
+
+	100% {
+		transform: translateY(36px) scaleY(2);
+		opacity: 0;
+	}
+
 }
 
 .content{
