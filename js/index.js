@@ -13,12 +13,21 @@ $(document).ready(function () {
         }
     });
 
-    $('a.scroll-link').click(function(e){
+    $('a.projects').click(function(e){
 		e.preventDefault();
 		$id = $(this).attr('href');
 		$('body,html').animate({
 			scrollTop: $($id).offset().top -50
 		}, 750);
-	});
+    });
+    
+    $('a.contact').click(function(e){
+		e.preventDefault();
+		$id = $(this).attr('href');
+		$('body,html').animate({
+			scrollTop: $($id).offset().top -50
+		}, 750);
+    });
+
   });
   
