@@ -1,11 +1,12 @@
 html {
-    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-family: 'Overpass', sans-serif;
     height: 100%;
     width: 100%;
 }
 
 body {
-    background: url("https://static.wixstatic.com/media/08fe21_6fc7cb797fc542dc8b4fea9e2cbd85f7~mv2_d_3610_2357_s_2.jpg/v1/fill/w_1470,h_1520,al_c,q_90,usm_0.66_1.00_0.01/08fe21_6fc7cb797fc542dc8b4fea9e2cbd85f7~mv2_d_3610_2357_s_2.webp") no-repeat top center fixed;
+    /* background: url("https://static.wixstatic.com/media/08fe21_6fc7cb797fc542dc8b4fea9e2cbd85f7~mv2_d_3610_2357_s_2.jpg/v1/fill/w_1470,h_1520,al_c,q_90,usm_0.66_1.00_0.01/08fe21_6fc7cb797fc542dc8b4fea9e2cbd85f7~mv2_d_3610_2357_s_2.webp") no-repeat top center fixed; */
+    background: url("../files/bground.png") no-repeat top center fixed;
     background-size: cover;
     margin: 0;
     padding: 0;
@@ -56,7 +57,7 @@ body {
     margin: 0;
     padding: 0;
     color: white;
-    text-shadow: -1px 0 #91a7d0, 0 1px #91a7d0, 1px 0 #91a7d0, 0 -1px #91a7d0;
+    /* text-shadow: -1px 0 #91a7d0, 0 1px #91a7d0, 1px 0 #91a7d0, 0 -1px #91a7d0; */
     text-align: center;
     font-size: 50px;
     margin-top: 5em;
@@ -77,6 +78,7 @@ body {
     font-size: 30px;
     border-radius: 10px;
     padding: 10px;
+    border: 0;
 }
 
 /* Mouse Animation */

@@ -7,7 +7,7 @@ $(document).ready(function () {
         scroll_start = $(this).scrollTop();
 
         if(scroll_start > offset.top) {
-            $('.navigation').css({"background-color": "#ffffff", "transition": "background-color 200ms linear"});
+            $('.navigation').css({"background-color": "#ffffff", "color": "#000000", "transition": "background-color 200ms linear"});
         } else {
             $('.navigation').css({"background-color": "transparent", "transition": "background-color 200ms linear"});
         }
