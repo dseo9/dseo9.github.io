@@ -24,6 +24,7 @@ body {
     top: 0;
     width: 100%;
     height: 3.5em;
+    z-index: 1;
 }
 .navbar li {
     float: right;
@@ -120,9 +121,7 @@ body {
 
 #projects {
     width: 100%;
-    /* height: 100%; */
     background: #ffffff;
-    margin: 0;
     margin-top: 21em;
     padding: 0;
 }
@@ -130,4 +129,32 @@ body {
 #projects p {
     width:75%;
     margin-left:12%;
+    margin-bottom: 0;
+    padding: 10px;
+}
+
+#contact {
+    width: 100%;
+    background: #ffffff;
+    padding: 0;
+}
+
+#contact h1, p {
+    margin:0;
+    padding:10px;
+}
+
+.parallax {
+    position:relative;
+    height:450px;
+}
+  
+/* When want to add more parallax scrolling effects, copy paste this block */
+#trans {
+    background: linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)), url('../files/bground2.jpg') no-repeat fixed;
+    background-position: center top;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
