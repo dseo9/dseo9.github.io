@@ -1,5 +1,6 @@
 html {
-    font-family: 'Overpass', sans-serif;
+    font-family: 'Arimo', sans-serif;
+    font-family: 'Gothic A1', sans-serif;
     height: 100%;
     width: 100%;
 }
@@ -76,8 +77,8 @@ body {
 #resume {
     background-color: #ffcc00;
     color: #ffffff;
-    font-size: 30px;
-    border-radius: 10px;
+    font-size: 27px;
+    border-radius: 5px;
     padding: 10px;
     border: 0;
 }
