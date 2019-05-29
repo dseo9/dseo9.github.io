@@ -8,9 +8,18 @@ $(document).ready(function () {
         scroll_start = $(this).scrollTop();
 
         if(scroll_start > offset.top) {
-            $('.navigation').css({"background-color": "#ffffff", "color": "#000000", "transition": "background-color 500ms linear"});
+            console.log("change to white navbar ");
+            $('.navigation').css({"background-color": "#ffffff", "transition": "background-color 300ms linear"});
+            $('.home').css({"color": "black"});
+            $('.projects').css({"color": "black"});
+            $('.contact').css({"color": "black"});
         } else {
-            $('.navigation').css({"background-color": "transparent", "transition": "background-color 500ms linear"});
+          console.log("change to transparent");
+            $('.navigation').css({"background-color": "transparent", "transition": "background-color 300ms linear"});
+            $('.home').css({"color": "#ffffff"});
+            $('.projects').css({"color": "#ffffff"});
+            $('.contact').css({"color": "#ffffff"});
+
         }
     });
 
