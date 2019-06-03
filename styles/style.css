@@ -8,8 +8,8 @@ html {
 body {
     background: url("../files/bground.png") no-repeat top center fixed;
     background-size: cover;
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     height: 100%;
     width: 100%;
 }
@@ -120,6 +120,10 @@ body {
 
 }
 
+.content h1 {
+    text-align: center;
+}
+
 #projects {
     width: 100%;
     background: #ffffff;
@@ -138,28 +142,27 @@ body {
     width: 100%;
     background: #ffffff;
     padding: 0;
-}
-
-#contact img {
-    border-radius: 50%;
-    margin: 20px;
-    margin-left: 20%;
-}
-
-#contact h1, h3, p {
-    margin:0;
-    padding:10px;
-}
-
-#contact h3 {
-    float: right;
-    width: 50%;
-}
-
-.content h1 {
     text-align: center;
-    /* text-decoration: underline;
-    text-decoration-color: grey; */
+}
+
+#actualContent {
+   display: inline-block;
+   margin: 30px;
+}
+
+#elly {
+    border-radius: 50%;
+    display: inline-block;
+    margin-top: -10em;
+}
+
+#aboutme {
+    width: 40%;
+    display: inline-block;
+}
+
+.icon {
+    padding:3px;
 }
 
 .parallax {
