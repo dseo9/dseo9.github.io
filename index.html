@@ -1,4 +1,662 @@
 <!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>타자 연습</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sky-top: #6ec6f5;
+      --sky-bot: #b8e4ff;
+      --surface2: #f5f9ff;
+      --border: #d4e8f7;
+      --text-primary: #1e2d3d;
+      --text-secondary: #5a7a94;
+      --text-hint: #92b4c8;
+      --blue: #3b82f6;
+      --blue-dark: #1d4ed8;
+      --purple: #a855f7;
+      --purple-dark: #7c3aed;
+      --green: #22c55e;
+      --red: #ef4444;
+      --red-light: #fee2e2;
+      --shadow-card: 0 8px 32px rgba(0,0,0,0.10);
+      --radius-card: 20px;
+      --radius-btn: 14px;
+      --radius-pill: 999px;
+    }
+
+    html, body { min-height: 100%; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bot) 55%, #ddf0ff 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* 배경 구름 */
+    .bg-clouds { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bc {
+      position: absolute;
+      background: white;
+      border-radius: 60px;
+      opacity: 0.5;
+    }
+    .bc::before, .bc::after {
+      content: ''; position: absolute; background: white; border-radius: 50%;
+    }
+    .bc1 { width:170px;height:46px;top:7%;left:-30px; animation:drift 30s linear infinite; }
+    .bc1::before{width:72px;height:72px;top:-38px;left:22px;}
+    .bc1::after{width:52px;height:52px;top:-26px;left:74px;}
+    .bc2 { width:210px;height:54px;top:20%;left:55%; animation:drift 38s linear infinite 8s; opacity:.38; }
+    .bc2::before{width:84px;height:84px;top:-46px;left:32px;}
+    .bc2::after{width:62px;height:62px;top:-32px;left:94px;}
+    .bc3 { width:140px;height:38px;top:4%;left:38%; animation:drift 24s linear infinite 14s; opacity:.32; }
+    .bc3::before{width:58px;height:58px;top:-32px;left:18px;}
+    .bc3::after{width:42px;height:42px;top:-22px;left:58px;}
+    .bc4 { width:190px;height:50px;top:35%;left:75%; animation:drift 34s linear infinite 4s; opacity:.28; }
+    .bc4::before{width:78px;height:78px;top:-44px;left:26px;}
+    .bc4::after{width:58px;height:58px;top:-30px;left:84px;}
+    @keyframes drift { from{transform:translateX(0)} to{transform:translateX(calc(100vw + 320px))} }
+
+    header {
+      position: relative; z-index: 10;
+      padding: 0 2rem; height: 62px;
+      display: flex; align-items: center;
+    }
+    .logo {
+      font-family: 'Jua', sans-serif;
+      font-size: 22px; color: white;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.18), 0 0 24px rgba(255,255,255,0.35);
+    }
+    .logo em { color: #fde68a; font-style: normal; }
+
+    main {
+      flex: 1; position: relative; z-index: 10;
+      display: flex; justify-content: center;
+      padding: 1rem 1rem 4rem;
+    }
+    .container { width: 100%; max-width: 700px; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── 모드 선택 ── */
+    .select-title {
+      font-family: 'Jua', sans-serif;
+      font-size: 30px; color: white; text-align: center;
+      text-shadow: 0 3px 0 rgba(0,0,0,0.18);
+      margin-bottom: 4px; letter-spacing: 0.02em;
+    }
+    .select-stars { text-align:center; font-size:18px; letter-spacing:5px; margin-bottom:1.5rem; }
+
+    .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .mode-card {
+      border-radius: var(--radius-card);
+      padding: 1.75rem 1.25rem 1.5rem;
+      cursor: pointer; text-align: center; border: none;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .mode-card:hover  { transform: translateY(-3px); }
+    .mode-card:active { transform: translateY(1px); }
+    .mode-card.blue-card {
+      background: linear-gradient(140deg,#93c5fd,#3b82f6);
+      box-shadow: 0 6px 0 #1d4ed8, var(--shadow-card);
+    }
+    .mode-card.purple-card {
+      background: linear-gradient(140deg,#d8b4fe,#a855f7);
+      box-shadow: 0 6px 0 #7c3aed, var(--shadow-card);
+    }
+    .mode-card.blue-card:hover   { box-shadow: 0 9px 0 #1d4ed8, var(--shadow-card); }
+    .mode-card.purple-card:hover { box-shadow: 0 9px 0 #7c3aed, var(--shadow-card); }
+    .mode-card.blue-card:active   { box-shadow: 0 2px 0 #1d4ed8, var(--shadow-card); }
+    .mode-card.purple-card:active { box-shadow: 0 2px 0 #7c3aed, var(--shadow-card); }
+
+    .mode-emoji { font-size: 42px; margin-bottom: 10px; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+    .mode-card-title {
+      font-family: 'Jua', sans-serif; font-size: 21px; color: white;
+      text-shadow: 0 2px 0 rgba(0,0,0,0.15); margin-bottom: 8px;
+    }
+    .mode-card-desc { font-size: 13px; color: rgba(255,255,255,0.9); line-height: 1.65; }
+    .mode-card-tag {
+      display: inline-block; margin-top: 13px;
+      background: rgba(255,255,255,0.22); border-radius: var(--radius-pill);
+      padding: 3px 13px; font-size: 11px; color: white;
+      font-weight: 700; letter-spacing: 0.04em;
+    }
+
+    /* ── 게임 화면 ── */
+    .game-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .pill-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+      padding: 5px 15px; border-radius: var(--radius-pill); color: white;
+    }
+    .pill-blue   { background: linear-gradient(90deg,#60a5fa,#3b82f6); box-shadow: 0 3px 0 #1d4ed8; }
+    .pill-purple { background: linear-gradient(90deg,#c084fc,#a855f7); box-shadow: 0 3px 0 #7c3aed; }
+
+    .btn-back {
+      background: white; border: 1.5px solid var(--border); border-radius: var(--radius-pill);
+      padding: 6px 15px; font-size: 12.5px; font-family: 'Noto Sans KR', sans-serif;
+      color: var(--text-secondary); cursor: pointer; font-weight: 500; transition: all 0.12s;
+    }
+    .btn-back:hover { border-color: #93c5fd; color: var(--blue); background: #eff6ff; }
+
+    .game-card {
+      background: white; border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card); padding: 1.5rem;
+    }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+    .stat-card {
+      background: var(--surface2); border: 2px solid var(--border);
+      border-radius: 16px; padding: 14px 16px; text-align: center;
+    }
+    .stat-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--text-hint); margin-bottom: 4px;
+    }
+    .stat-value {
+      font-family: 'Jua', sans-serif; font-size: 34px;
+      color: var(--text-primary); line-height: 1.1;
+    }
+    .stat-unit { font-size: 11px; color: var(--text-hint); margin-top: 1px; }
+
+    .timer-track {
+      height: 8px; background: var(--border); border-radius: var(--radius-pill);
+      margin-bottom: 1rem; overflow: hidden;
+    }
+    .timer-bar {
+      height: 100%; border-radius: var(--radius-pill);
+      background: linear-gradient(90deg,#60a5fa,#3b82f6);
+      transition: width 0.1s linear, background 0.4s;
+    }
+    .timer-bar.danger { background: linear-gradient(90deg,#f87171,#ef4444); }
+
+    .dots-row { display: flex; gap: 7px; margin-bottom: 10px; align-items: center; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border); transition: all 0.2s; }
+    .dot.done    { background: var(--green); transform: scale(1.1); }
+    .dot.current { background: var(--blue); transform: scale(1.2); box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+
+    .hint-text { font-size: 12px; color: var(--text-hint); margin-bottom: 8px; font-family: 'DM Mono', monospace; }
+
+    .prompt-card {
+      background: var(--surface2); border: 2px solid var(--border);
+      border-radius: 16px; padding: 1.1rem 1.25rem; margin-bottom: 1rem;
+      font-size: 17px; line-height: 2; min-height: 90px; word-break: keep-all;
+    }
+    .char { display: inline; }
+    .char.correct { color: var(--green); }
+    .char.wrong   { color: var(--red); background: var(--red-light); border-radius: 3px; }
+    .char.cursor  { position: relative; }
+    .char.cursor::after {
+      content: ''; position: absolute; left: 0; bottom: 2px;
+      width: 100%; height: 2.5px; background: var(--blue);
+      border-radius: 2px; animation: blink 0.8s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    textarea {
+      width: 100%; font-size: 16px; font-family: 'Noto Sans KR', sans-serif;
+      padding: 0.9rem 1.1rem; border: 2px solid var(--border); border-radius: 16px;
+      background: white; color: var(--text-primary); resize: none; height: 84px;
+      line-height: 1.6; outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+      margin-bottom: 1rem;
+    }
+    textarea:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+    textarea:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: linear-gradient(135deg,#fbbf24,#f59e0b);
+      color: white; border: none; border-radius: var(--radius-btn);
+      padding: 11px 24px; font-size: 15px; font-family: 'Jua', sans-serif;
+      cursor: pointer; box-shadow: 0 4px 0 #d97706; letter-spacing: 0.03em;
+      transition: transform 0.1s, box-shadow 0.1s; text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+    }
+    .btn-primary:hover  { transform: translateY(-1px); box-shadow: 0 5px 0 #d97706; }
+    .btn-primary:active { transform: translateY(2px);  box-shadow: 0 2px 0 #d97706; }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: white; color: var(--text-secondary);
+      border: 2px solid var(--border); border-radius: var(--radius-btn);
+      padding: 10px 20px; font-size: 14px;
+      font-family: 'Noto Sans KR', sans-serif; font-weight: 600;
+      cursor: pointer; transition: all 0.12s;
+    }
+    .btn-secondary:hover  { border-color: #93c5fd; color: var(--blue); }
+    .btn-secondary:active { transform: scale(0.98); }
+
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    /* ── 결과 ── */
+    .result-title {
+      font-family: 'Jua', sans-serif; font-size: 32px; color: white;
+      text-align: center; text-shadow: 0 3px 0 rgba(0,0,0,0.18);
+      margin-bottom: 4px;
+    }
+    .result-sub-text {
+      text-align: center; font-size: 13px; color: rgba(255,255,255,0.88);
+      margin-bottom: 1.5rem; font-family: 'DM Mono', monospace;
+    }
+    .result-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.5rem; }
+    .result-score-card {
+      background: white; border-radius: var(--radius-card);
+      padding: 1.5rem 1rem; text-align: center; box-shadow: var(--shadow-card);
+    }
+    .rs-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--text-hint); margin-bottom: 10px;
+    }
+    .rs-number { font-family: 'Jua', sans-serif; font-size: 52px; line-height: 1; }
+    .rs-unit { font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 400; color: var(--text-secondary); margin-left: 2px; }
+    .rs-blue   { color: var(--blue); }
+    .rs-purple { color: var(--purple); }
+    .result-btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    footer {
+      position: relative; z-index: 10; text-align: center; padding: 1rem;
+      font-size: 12px; color: rgba(255,255,255,0.5); font-family: 'DM Mono', monospace;
+    }
+
+    @media (max-width: 520px) {
+      .mode-grid { grid-template-columns: 1fr; }
+      .select-title { font-size: 24px; }
+      .rs-number { font-size: 40px; }
+      .prompt-card { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-clouds" aria-hidden="true">
+  <div class="bc bc1"></div>
+  <div class="bc bc2"></div>
+  <div class="bc bc3"></div>
+  <div class="bc bc4"></div>
+</div>
+
+<header>
+  <div class="logo">⌨️ 타자<em>연습</em></div>
+</header>
+
+<main>
+  <div class="container">
+
+    <!-- 모드 선택 -->
+    <div id="screen-select" class="screen active">
+      <div class="select-title">⭐ 모드를 선택하세요 ⭐</div>
+      <div class="select-stars">✦ ✦ ✦</div>
+      <div class="mode-grid">
+        <div class="mode-card blue-card" id="btn-mode-time" role="button" tabindex="0">
+          <span class="mode-emoji">⏱️</span>
+          <div class="mode-card-title">타임어택</div>
+          <div class="mode-card-desc">60초 안에 최대한 많은<br>문장을 정확히 입력하세요!</div>
+          <span class="mode-card-tag">60초 · 연속 입력</span>
+        </div>
+        <div class="mode-card purple-card" id="btn-mode-random" role="button" tabindex="0">
+          <span class="mode-emoji">🎲</span>
+          <div class="mode-card-title">랜덤</div>
+          <div class="mode-card-desc">무작위 제시문 하나를<br>빠르고 정확하게 완성!</div>
+          <span class="mode-card-tag">1문장 · 완성 즉시 결과</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 게임 화면 -->
+    <div id="screen-game" class="screen">
+      <div class="game-top">
+        <span class="pill-badge" id="game-badge"></span>
+        <button class="btn-back" id="btn-back-select">← 모드 선택</button>
+      </div>
+      <div class="game-card">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">타수</div>
+            <div class="stat-value" id="s-cpm">0</div>
+            <div class="stat-unit">타 / 분</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label" id="stat2-label">남은 시간</div>
+            <div class="stat-value" id="s-stat2">60</div>
+            <div class="stat-unit" id="stat2-unit">초</div>
+          </div>
+        </div>
+        <div class="timer-track">
+          <div class="timer-bar" id="timer-bar" style="width:100%;"></div>
+        </div>
+        <div id="progress-dots" class="dots-row" style="display:none;"></div>
+        <div class="hint-text" id="hint-text"></div>
+        <div class="prompt-card" id="prompt-box"></div>
+        <textarea id="input-area" placeholder="여기를 클릭하고 타이핑을 시작하면 측정이 시작됩니다..."></textarea>
+        <div class="btn-row">
+          <button class="btn-primary" id="btn-restart">↺ 다시 시작</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 결과 화면 -->
+    <div id="screen-result" class="screen">
+      <div class="result-title">🏆 결과 발표!</div>
+      <div class="result-sub-text" id="result-sub"></div>
+      <div class="result-scores">
+        <div class="result-score-card">
+          <div class="rs-label">평균 타수</div>
+          <div class="rs-number rs-blue" id="r-cpm">0<span class="rs-unit">타/분</span></div>
+        </div>
+        <div class="result-score-card">
+          <div class="rs-label">정확도</div>
+          <div class="rs-number rs-purple" id="r-acc">100<span class="rs-unit">%</span></div>
+        </div>
+      </div>
+      <div class="result-btn-row">
+        <button class="btn-primary" id="btn-retry">↺ 다시 하기</button>
+        <button class="btn-secondary" id="btn-change-mode">🏠 모드 선택</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>타자연습 · 자소 기준 타수 측정 (한컴 방식)</footer>
+
+<script>
+const SENTENCES = [
+  "일에 대한 애정을 바탕으로 어려움이 발생하더라도 포기하지 않고 지속적으로 노력하여 목표를 능동적으로 달성하려는 태도",
+  "자신의 역할과 의무를 성실하게 수행하는 것에 보람을 느끼며, 끝까지 책임을 지려는 태도",
+  "이해를 목적으로 다양한 범위에서 협업할 수 있도록 온라인, 오프라인을 망라하여 상호간 생각하는 바를 명확히 표현하는 것",
+  "이해를 목적으로 시간과 거리의 한계를 넘어 협업의 범위를 확장시키고 지속적인 know-how 공유 차원에서 material을 주고 받는 것",
+  "소통/공유를 통해 회사의 Mega Value 및 업무의 가치/과제를 명확히 이해하는 것",
+  "미래 선점 및 고객 즐거움을 목적으로, 업무 본질/상황을 파악하여 발상의 전환을 통해 의미 있는 가치를 만들어 내는 것"
+];
+
+/* ── 자소 계산 (한컴 방식) ── */
+const HANGUL_START = 0xAC00, HANGUL_END = 0xD7A3, JONGSUNG_COUNT = 28;
+function jasoCount(ch) {
+  const c = ch.charCodeAt(0);
+  if (c < HANGUL_START || c > HANGUL_END) return 1;
+  return (c - HANGUL_START) % JONGSUNG_COUNT === 0 ? 2 : 3;
+}
+function strJaso(str) { let t=0; for (const c of str) t+=jasoCount(c); return t; }
+function sentenceAccuracy(typed, text) {
+  let correct = 0;
+  for (let i = 0; i < text.length; i++) {
+    if (i < typed.length && typed[i] === text[i]) correct += jasoCount(text[i]);
+  }
+  return { correctJaso: correct, totalJaso: strJaso(text) };
+}
+
+/* ── 상태 ── */
+let mode=null, started=false, finished=false;
+let timerInterval=null, startTime=null;
+let sentenceIdx=0, order=[];
+let completedSentences=0, randomSentenceIdx=0, lastRandomIdx=-1;
+let totalCorrectJaso=0, totalJasoAttempted=0, totalCorrectJasoForAcc=0;
+
+/* IME 한글 조합 상태 추적 */
+let isComposing = false;
+/* 문장 전환 직후 IME 잔재 제거용 플래그 */
+let justCleared = false;
+
+const $ = id => document.getElementById(id);
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function currentText() {
+  return mode==='time' ? SENTENCES[order[sentenceIdx%order.length]] : SENTENCES[randomSentenceIdx];
+}
+
+function buildPrompt() {
+  const box=$('prompt-box'), text=currentText();
+  box.innerHTML='';
+  for(let i=0;i<text.length;i++){
+    const s=document.createElement('span');
+    s.className='char'+(i===0?' cursor':'');
+    s.id='c'+i; s.textContent=text[i];
+    box.appendChild(s);
+  }
+  updateDots();
+}
+
+function updatePromptDisplay(typed) {
+  const text=currentText();
+  for(let i=0;i<text.length;i++){
+    const el=$('c'+i); if(!el) continue;
+    if(i<typed.length) el.className='char '+(typed[i]===text[i]?'correct':'wrong');
+    else if(i===typed.length) el.className='char cursor';
+    else el.className='char';
+  }
+}
+
+function resetPromptDisplay() {
+  const text=currentText();
+  for(let i=0;i<text.length;i++){
+    const el=$('c'+i);
+    if(el) el.className=i===0?'char cursor':'char';
+  }
+}
+
+function updateDots() {
+  if(mode!=='time') return;
+  const dots=$('progress-dots'); dots.innerHTML='';
+  const cur=sentenceIdx%SENTENCES.length;
+  SENTENCES.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i<cur?' done':i===cur?' current':'');
+    dots.appendChild(d);
+  });
+}
+
+function elapsed() { return startTime?(Date.now()-startTime)/1000:0; }
+function calcCpm(sec) { if(sec<0.5) return 0; return Math.round(totalCorrectJaso/(sec/60)); }
+function calcAcc() { if(totalJasoAttempted===0) return 100; return Math.round(totalCorrectJasoForAcc/totalJasoAttempted*100); }
+
+function setupGame(m) {
+  mode=m; started=false; finished=false;
+  sentenceIdx=0; completedSentences=0;
+  totalCorrectJaso=0; totalJasoAttempted=0; totalCorrectJasoForAcc=0;
+  isComposing=false; justCleared=false;
+  clearInterval(timerInterval); timerInterval=null; startTime=null;
+
+  order=shuffle([...Array(SENTENCES.length).keys()]);
+  if(SENTENCES.length>1){
+    let next;
+    do{next=Math.floor(Math.random()*SENTENCES.length);}while(next===lastRandomIdx);
+    randomSentenceIdx=next;
+  } else randomSentenceIdx=0;
+
+  const badge=$('game-badge'), bar=$('timer-bar');
+  if(mode==='time'){
+    badge.textContent='⏱ 타임어택'; badge.className='pill-badge pill-blue';
+    $('progress-dots').style.display='flex';
+    $('stat2-label').textContent='남은 시간'; $('stat2-unit').textContent='초'; $('s-stat2').textContent='60';
+    bar.style.width='100%'; bar.className='timer-bar';
+    $('hint-text').textContent='60초 동안 최대한 많은 문장을 입력하세요';
+  } else {
+    badge.textContent='🎲 랜덤'; badge.className='pill-badge pill-purple';
+    $('progress-dots').style.display='none';
+    $('stat2-label').textContent='경과 시간'; $('stat2-unit').textContent='초'; $('s-stat2').textContent='0';
+    bar.style.width='0%'; bar.className='timer-bar';
+    $('hint-text').textContent='제시문을 빠르고 정확하게 완성하세요';
+  }
+
+  $('s-cpm').textContent='0';
+  const inp=$('input-area');
+  inp.value=''; inp.disabled=false;
+  buildPrompt();
+  showScreen('screen-game');
+  setTimeout(()=>inp.focus(), 60);
+}
+
+function startTimerLoop() {
+  timerInterval=setInterval(()=>{
+    const sec=elapsed();
+    $('s-cpm').textContent=calcCpm(sec);
+    if(mode==='time'){
+      const rem=Math.max(0,60-sec);
+      $('s-stat2').textContent=Math.ceil(rem);
+      $('timer-bar').style.width=(rem/60*100)+'%';
+      if(rem<=10) $('timer-bar').className='timer-bar danger';
+      if(rem<=0){
+        // 미완성 문장 부분 집계
+        const pv=$('input-area').value, pt=currentText();
+        const {correctJaso}=sentenceAccuracy(pv,pt);
+        totalCorrectJaso+=correctJaso;
+        totalCorrectJasoForAcc+=correctJaso;
+        totalJasoAttempted+=strJaso(pv);
+        clearInterval(timerInterval); endGame();
+      }
+    } else {
+      $('s-stat2').textContent=Math.round(sec);
+      $('timer-bar').style.width=Math.min(sec/60*100,100)+'%';
+    }
+  },100);
+}
+
+function endGame() {
+  if(finished) return;
+  finished=true; clearInterval(timerInterval);
+  $('input-area').disabled=true;
+  const cpm=calcCpm(elapsed()), acc=calcAcc();
+  $('r-cpm').innerHTML=cpm+'<span class="rs-unit">타/분</span>';
+  $('r-acc').innerHTML=acc+'<span class="rs-unit">%</span>';
+  $('result-sub').textContent = mode==='time'
+    ? '60초 동안 '+completedSentences+'개 문장 완료!'
+    : Math.round(elapsed())+'초 만에 완성!';
+  showScreen('screen-result');
+}
+
+const inp=$('input-area');
+
+/* IME 이벤트: 한글 조합 중/후 상태 추적 */
+inp.addEventListener('compositionstart', ()=>{ isComposing=true; });
+inp.addEventListener('compositionend',   ()=>{ isComposing=false; });
+
+inp.addEventListener('input', (e)=>{
+  if(finished) return;
+
+  /* 문장 전환 직후 IME 잔재(조합 중이던 마지막 글자) 제거 */
+  if(justCleared){
+    justCleared=false;
+    if(inp.value!==''){
+      inp.value='';
+      resetPromptDisplay();
+    }
+    return;
+  }
+
+  const val=inp.value, text=currentText();
+
+  if(!started && val.length>0){
+    started=true; startTime=Date.now(); startTimerLoop();
+  }
+
+  updatePromptDisplay(val);
+
+  /* 조합 중엔 완성 판정 보류 */
+  if(!isComposing && val===text){
+    const {correctJaso,totalJaso}=sentenceAccuracy(val,text);
+    totalCorrectJaso       +=correctJaso;
+    totalCorrectJasoForAcc +=correctJaso;
+    totalJasoAttempted     +=totalJaso;
+    completedSentences++;
+
+    if(mode==='time'){
+      sentenceIdx++;
+      if(sentenceIdx%SENTENCES.length===0) order=shuffle([...Array(SENTENCES.length).keys()]);
+
+      /* 핵심 버그픽스: value 초기화 후 justCleared 플래그로 IME 잔재 차단 */
+      inp.value='';
+      justCleared=true;
+      buildPrompt();
+    } else {
+      lastRandomIdx=randomSentenceIdx;
+      endGame();
+    }
+  }
+});
+
+inp.addEventListener('paste', (e)=>{ e.preventDefault(); });
+
+/* 엔터키: 문장이 완성된 상태면 즉시 처리, 아니면 줄바꿈 차단 */
+inp.addEventListener('keydown', (e)=>{
+  if(e.key !== 'Enter') return;
+  e.preventDefault(); // 항상 줄바꿈 차단
+  if(finished || !started) return;
+
+  const val = inp.value.trimEnd(); // 엔터 직전 값 (줄바꿈 제거)
+  const text = currentText();
+
+  if(val !== text) return; // 문장이 아직 완성 안 됐으면 무시
+
+  const {correctJaso, totalJaso} = sentenceAccuracy(val, text);
+  totalCorrectJaso       += correctJaso;
+  totalCorrectJasoForAcc += correctJaso;
+  totalJasoAttempted     += totalJaso;
+  completedSentences++;
+
+  if(mode === 'time'){
+    sentenceIdx++;
+    if(sentenceIdx % SENTENCES.length === 0) order = shuffle([...Array(SENTENCES.length).keys()]);
+    inp.value = '';
+    isComposing = false;
+    justCleared = true;
+    buildPrompt();
+  } else {
+    lastRandomIdx = randomSentenceIdx;
+    endGame();
+  }
+});
+
+['btn-mode-time','btn-mode-random'].forEach(id=>{
+  $(id).addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') $(id).click(); });
+});
+
+$('btn-mode-time').addEventListener('click',   ()=>setupGame('time'));
+$('btn-mode-random').addEventListener('click', ()=>setupGame('random'));
+$('btn-back-select').addEventListener('click', ()=>{ clearInterval(timerInterval); showScreen('screen-select'); });
+$('btn-restart').addEventListener('click',     ()=>setupGame(mode));
+$('btn-retry').addEventListener('click',       ()=>setupGame(mode));
+$('btn-change-mode').addEventListener('click', ()=>showScreen('screen-select'));
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
 <html>
     <head>
         <title>Elly Seo</title>
@@ -137,4 +795,4 @@
            
         </div>
     </body>
-</html>
+</html> -->
